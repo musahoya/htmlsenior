@@ -1,23 +1,44 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#07101d"><title>광안대교 실시간 교통상황</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07101d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="광안대교">
+<title>광안대교 실시간 교통상황</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#07101d;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif}.app{max-width:820px;margin:auto;padding:16px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}h1{font-size:22px;margin:0}.live{font-size:12px;color:#ff7676;font-weight:800}.viewer{background:#000;border-radius:18px;overflow:hidden;box-shadow:0 14px 40px #0008}.ratio{aspect-ratio:16/9;position:relative}.ratio iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.bar{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px;background:#111b2d}.bar b{font-size:16px}.actions{display:flex;gap:7px}button{border:0;border-radius:12px;color:#fff;background:#17253f;padding:11px 12px;font-weight:800}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.cam{min-height:60px;text-align:left;border:1px solid #ffffff18;background:#101a2e}.cam.active{outline:2px solid #54a8ff;background:#16345b}.hint{color:#91a0b5;font-size:12px;line-height:1.5;margin-top:12px}.fallback{display:none;padding:16px;text-align:center;background:#201817}.fallback.show{display:block}.fallback a{display:inline-block;margin-top:8px;color:white;background:#d93025;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:800}@media(min-width:650px){.grid{grid-template-columns:repeat(5,1fr)}}
+*{box-sizing:border-box}html{background:#07101d}body{margin:0;background:#07101d;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;min-height:100vh;min-height:100dvh}.app{max-width:820px;margin:auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(22px + env(safe-area-inset-bottom))}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}h1{font-size:22px;margin:0}.live{font-size:12px;color:#ff7676;font-weight:800}.viewer{background:#000;border-radius:18px;overflow:hidden;box-shadow:0 14px 40px #0008}.ratio{aspect-ratio:16/9;position:relative}.ratio iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.bar{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px;background:#111b2d}.bar b{font-size:16px}.actions{display:flex;gap:7px}button{border:0;border-radius:12px;color:#fff;background:#17253f;padding:11px 12px;font-weight:800;font:inherit;font-weight:800}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.cam{min-height:60px;text-align:left;border:1px solid #ffffff18;background:#101a2e}.cam.active{outline:2px solid #54a8ff;background:#16345b}.hint{color:#91a0b5;font-size:12px;line-height:1.5;margin-top:12px}.fallback{display:none;padding:16px;text-align:center;background:#201817}.fallback.show{display:block}.fallback a{display:inline-block;margin-top:8px;color:white;background:#d93025;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:800}.install{display:none;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:13px 14px;border:1px solid #54a8ff66;border-radius:15px;background:#0d2744}.install.show{display:flex}.install p{margin:0;font-size:13px;line-height:1.4}.install button{flex:0 0 auto;background:#2488ed}.install .close{padding:8px;background:transparent;color:#91a0b5}.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);max-width:calc(100% - 32px);padding:12px 16px;border-radius:12px;background:#eef6ff;color:#07101d;font-weight:700;font-size:13px;box-shadow:0 8px 30px #0008;display:none;z-index:10}.toast.show{display:block}@media(min-width:650px){.grid{grid-template-columns:repeat(5,1fr)}}@media(display-mode:standalone){.app{padding-top:calc(20px + env(safe-area-inset-top))}.install{display:none!important}}
 </style>
 </head>
 <body><main class="app">
+<div id="installBox" class="install"><p id="installText"><b>홈 화면에 설치</b><br>다음부터 아이콘 한 번으로 바로 실행하세요.</p><button id="installBtn">설치</button><button class="close" id="installClose" aria-label="닫기">✕</button></div>
 <div class="head"><div><h1>광안대교 실시간 교통상황</h1><div style="color:#91a0b5;font-size:13px;margin-top:4px">CCTV를 눌러 바로 전환</div></div><div class="live">● LIVE</div></div>
-<section class="viewer"><div class="ratio"><iframe id="player" title="광안대교 CCTV" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><div id="fallback" class="fallback">영상이 웹페이지 안에서 재생되지 않으면 이 방송은 외부 재생이 제한된 것입니다.<br><a id="ytlink" target="_blank" rel="noopener">YouTube에서 열기</a></div><div class="bar"><b id="name">하부 롯데아파트</b><div class="actions"><button onclick="reload()">새로고침</button><button onclick="openYT()">YouTube</button></div></div></section>
-<div class="grid" id="grid"></div><div class="hint">HTTPS 웹주소에서 실행되는 테스트 버전입니다. 영상 자체가 외부 임베드를 허용하는 경우에는 이 화면에서 바로 재생됩니다.</div>
-</main>
+<section class="viewer"><div class="ratio"><iframe id="player" title="광안대교 CCTV" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><div id="fallback" class="fallback">영상이 웹페이지 안에서 재생되지 않으면 이 방송은 외부 재생이 제한된 것입니다.<br><a id="ytlink" target="_blank" rel="noopener">YouTube에서 열기</a></div><div class="bar"><b id="name">하부 롯데아파트</b><div class="actions"><button id="reloadBtn">새로고침</button><button id="ytBtn">YouTube</button></div></div></section>
+<div class="grid" id="grid"></div><div class="hint">홈 화면에 설치하면 주소창 없이 앱처럼 열립니다. 영상 재생에는 인터넷 연결이 필요합니다.</div>
+</main><div id="toast" class="toast" role="status"></div>
 <script>
-const cams=[
-['하부 롯데아파트','FJlxNUM-AXQ'],['하부 용호동','5-BhCOQ4f4s'],['상부 용호동','ufRTT1XhcSs'],['상부 현수중앙','OhXqC3pDBaU'],['상부','FbaiWK-0MsI']];
-let cur=0; const p=document.getElementById('player'), n=document.getElementById('name'), g=document.getElementById('grid'), f=document.getElementById('fallback'), y=document.getElementById('ytlink');
+const cams=[['하부 롯데아파트','FJlxNUM-AXQ'],['하부 용호동','5-BhCOQ4f4s'],['상부 용호동','ufRTT1XhcSs'],['상부 현수중앙','OhXqC3pDBaU'],['상부','FbaiWK-0MsI']];
+let cur=0,deferredPrompt=null;
+const p=document.getElementById('player'),n=document.getElementById('name'),g=document.getElementById('grid'),y=document.getElementById('ytlink');
+const installBox=document.getElementById('installBox'),installBtn=document.getElementById('installBtn'),installText=document.getElementById('installText'),toast=document.getElementById('toast');
 function src(id){return 'https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1'}
 function select(i){cur=i;n.textContent=cams[i][0];p.src=src(cams[i][1]);y.href='https://www.youtube.com/watch?v='+cams[i][1];document.querySelectorAll('.cam').forEach((b,j)=>b.classList.toggle('active',i===j));localStorage.setItem('gwanganCam',i)}
-function reload(){const s=p.src;p.src='about:blank';setTimeout(()=>p.src=s,150)} function openYT(){window.open('https://www.youtube.com/watch?v='+cams[cur][1],'_blank')}
-cams.forEach((c,i)=>{const b=document.createElement('button');b.className='cam';b.textContent=c[0];b.onclick=()=>select(i);g.appendChild(b)}); let s=Number(localStorage.getItem('gwanganCam'));select(Number.isInteger(s)&&s>=0&&s<cams.length?s:0);
+function reloadVideo(){const s=p.src;p.src='about:blank';setTimeout(()=>p.src=s,150)}
+function openYT(){window.open('https://www.youtube.com/watch?v='+cams[cur][1],'_blank','noopener')}
+function showToast(message){toast.textContent=message;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),4200)}
+cams.forEach((c,i)=>{const b=document.createElement('button');b.className='cam';b.textContent=c[0];b.onclick=()=>select(i);g.appendChild(b)});
+document.getElementById('reloadBtn').onclick=reloadVideo;document.getElementById('ytBtn').onclick=openYT;
+const requested=Number(new URLSearchParams(location.search).get('cam'));const saved=Number(localStorage.getItem('gwanganCam'));select(Number.isInteger(requested)&&requested>=0&&requested<cams.length?requested:(Number.isInteger(saved)&&saved>=0&&saved<cams.length?saved:0));
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredPrompt=event;if(!standalone&&!sessionStorage.getItem('installDismissed'))installBox.classList.add('show')});
+installBtn.onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();const choice=await deferredPrompt.userChoice;deferredPrompt=null;installBox.classList.remove('show');if(choice.outcome==='accepted')showToast('설치가 시작되었습니다. 홈 화면에서 광안대교 아이콘을 확인하세요.')}else{showToast('브라우저 메뉴(⋮)에서 “홈 화면에 추가” 또는 “앱 설치”를 눌러주세요.')}};
+document.getElementById('installClose').onclick=()=>{installBox.classList.remove('show');sessionStorage.setItem('installDismissed','1')};
+window.addEventListener('appinstalled',()=>{installBox.classList.remove('show');showToast('광안대교 앱이 설치되었습니다.')});
+setTimeout(()=>{if(!standalone&&!deferredPrompt&&!sessionStorage.getItem('installDismissed')){installText.innerHTML='<b>홈 화면에 추가</b><br>브라우저 메뉴(⋮)에서 “홈 화면에 추가”를 누르세요.';installBtn.textContent='방법 보기';installBox.classList.add('show')}},2500);
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 </script></body></html>
