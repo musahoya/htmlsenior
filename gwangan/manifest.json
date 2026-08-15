@@ -1,0 +1,43 @@
+{
+  "id": "/htmlsenior/gwangan/",
+  "name": "광안대교 실시간 교통상황",
+  "short_name": "광안대교",
+  "description": "광안대교 실시간 CCTV 5개를 빠르게 전환해 보는 앱",
+  "lang": "ko",
+  "start_url": "/htmlsenior/gwangan/",
+  "scope": "/htmlsenior/gwangan/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07101d",
+  "theme_color": "#07101d",
+  "categories": [
+    "navigation",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "하부 롯데아파트",
+      "short_name": "하부 롯데",
+      "url": "./?cam=0"
+    },
+    {
+      "name": "상부 용호동",
+      "short_name": "상부 용호",
+      "url": "./?cam=2"
+    }
+  ]
+}
