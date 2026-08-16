@@ -6,7 +6,7 @@
 
 1. Netlify에서 **Add new project → Import an existing project → GitHub**를 선택합니다.
 2. `musahoya/htmlsenior` 저장소를 선택합니다.
-3. **Branch to deploy**는 `main`, **Base directory**는 `commute-test`로 지정합니다.
+3. 최초 설정에서는 **Branch to deploy**를 `agent/secure-commute-worker`, **Base directory**를 `commute-test`로 지정합니다. GitHub PR을 병합한 뒤 배포 브랜치를 `main`으로 바꿉니다.
 4. Build command는 비워 두고 Publish directory는 `.`으로 지정해 배포합니다.
 
 ## 2. 비밀키 설정
