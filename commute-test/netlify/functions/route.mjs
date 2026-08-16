@@ -3,11 +3,11 @@ const DESTINATIONS = {oncheon:'부산 온천천공원길 38-4',millak:'부산 �
 
 export default async (request) => {
   const origin=request.headers.get('origin')||'';
-  const allowedOrigin=Netlify.env.get('ALLOWED_ORIGIN')||'https://musahoya.github.io';
-  const cors={'Access-Control-Allow-Origin':origin===allowedOrigin?origin:allowedOrigin,'Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type','Vary':'Origin'};
+  const allowedOrigins=(Netlify.env.get('ALLOWED_ORIGINS')||'https://musahoya.github.io,https://busan-commute-api.netlify.app').split(',').map(value=>value.trim());
+  const cors={'Access-Control-Allow-Origin':allowedOrigins.includes(origin)?origin:allowedOrigins[0],'Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type','Vary':'Origin'};
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
   if(request.method!=='POST')return json({error:'POST 요청만 지원합니다.'},405,cors);
-  if(origin&&origin!==allowedOrigin)return json({error:'허용되지 않은 사이트입니다.'},403,cors);
+  if(origin&&!allowedOrigins.includes(origin))return json({error:'허용되지 않은 사이트입니다.'},403,cors);
   const key=Netlify.env.get('KAKAO_REST_API_KEY');
   if(!key)return json({error:'서버에 카카오 API 키가 설정되지 않았습니다.'},500,cors);
   try{
