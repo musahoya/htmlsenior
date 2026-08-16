@@ -1,0 +1,7 @@
+name = "busan-commute-api"
+main = "worker.js"
+compatibility_date = "2026-08-16"
+
+[vars]
+ALLOWED_ORIGIN = "https://musahoya.github.io"
+
