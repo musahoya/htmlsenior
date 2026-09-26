@@ -32,10 +32,12 @@ button:active{background:#243a5e}
 @media(min-width:560px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .cam{padding:14px 10px;font-size:15px;line-height:1.25;text-align:center;word-break:keep-all}
 .cam.active{background:#2563eb;border-color:#5b8def;font-weight:700}
+.install{display:none;align-items:center;gap:10px;background:#12233d;border:1px solid #2a3f63;border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:14px;line-height:1.4}.install.show{display:flex}.install p{margin:0;flex:1}.install .x{background:none;border:0;padding:4px 8px;color:#91a0b5}
 .hint{color:#7f8fa6;font-size:12px;margin-top:14px;line-height:1.5}
 </style>
 </head>
 <body><main class="app">
+<div id="installBox" class="install"><p id="installText"><b>홈 화면에 설치</b><br>아이콘 한 번으로 바로 실행하세요.</p><button id="installBtn" type="button">설치</button><button class="x" id="installClose" type="button" aria-label="닫기">✕</button></div>
 <div class="head"><div><h1>부산 교통 CCTV</h1><div class="sub">지점을 누르면 바로 전환됩니다</div></div><div class="live">● LIVE</div></div>
 <section class="viewer"><div class="ratio"><video id="v" muted playsinline autoplay controls></video><div id="msg" class="msg" hidden></div></div></section>
 <div class="bar"><b id="name"></b><div><button id="reload" type="button">새로고침</button><button id="full" type="button">전체화면</button></div></div>
@@ -44,7 +46,7 @@ button:active{background:#243a5e}
 </main>
 <script src="./hls.min.js"></script>
 <script>
-const CAMS=[["좌수영교", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_125.stream/playlist.m3u8"], ["수영4호교", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_132.stream/playlist.m3u8"], ["센텀입구", "https://its-stream2.busan.go.kr:8443/rtplive/2026-EC-01-041.stream/playlist.m3u8"], ["과정교차로", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_63.stream/playlist.m3u8"], ["토곡사거리", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_62.stream/playlist.m3u8"], ["광안대교 상부 벡스코합류", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_176.stream/playlist.m3u8"], ["광안대교 상부 롯데아파트", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_171.stream/playlist.m3u8"], ["광안대교 하부 광안리합류", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_190.stream/playlist.m3u8"], ["신선대 부산항입구", "https://its-stream5.busan.go.kr:8443/rtplive/cctv_507.stream/playlist.m3u8"], ["동명오거리", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_44.stream/playlist.m3u8"], ["장산터널", "https://its-stream2.busan.go.kr:8443/rtplive/2026-EC-03-010.stream/playlist.m3u8"], ["대천램프", "https://its-stream6.busan.go.kr:8443/rtplive/cctv_2022229.stream/playlist.m3u8"]];
+const CAMS=[["좌수영교", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_125.stream/playlist.m3u8"], ["수영4호교", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_132.stream/playlist.m3u8"], ["센텀입구", "https://its-stream2.busan.go.kr:8443/rtplive/2026-EC-01-041.stream/playlist.m3u8"], ["과정교차로", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_63.stream/playlist.m3u8"], ["토곡사거리", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_62.stream/playlist.m3u8"], ["광안대교 상부 벡스코합류", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_176.stream/playlist.m3u8"], ["광안대교 상부 롯데아파트", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_171.stream/playlist.m3u8"], ["광안대교 하부 광안리합류", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_190.stream/playlist.m3u8"], ["신선대 부산항입구", "https://its-stream5.busan.go.kr:8443/rtplive/cctv_507.stream/playlist.m3u8"], ["동명오거리", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_44.stream/playlist.m3u8"], ["장산터널", "https://its-stream2.busan.go.kr:8443/rtplive/2026-EC-03-010.stream/playlist.m3u8"], ["대천램프", "https://its-stream6.busan.go.kr:8443/rtplive/cctv_2022229.stream/playlist.m3u8"], ["센텀시티역", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_203.stream/playlist.m3u8"], ["벡스코 컨벤션홀1 센텀시티역", "https://its-stream5.busan.go.kr:8443/rtplive/ID-1318_.stream/playlist.m3u8"], ["올림픽교차로", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_88.stream/playlist.m3u8"], ["벡스코 신관2 올림픽교차로", "https://its-stream5.busan.go.kr:8443/rtplive/ID-1319_.stream/playlist.m3u8"]];
 const v=document.getElementById('v'),msg=document.getElementById('msg'),nameEl=document.getElementById('name'),grid=document.getElementById('grid');
 let cur=0,hls=null,retry=0,retryTimer=0;
 function say(text){msg.textContent=text||'';msg.hidden=!text}
@@ -85,5 +87,14 @@ document.getElementById('full').onclick=()=>{const f=v.requestFullscreen||v.webk
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')play()});
 let start=0;try{const q=Number(new URLSearchParams(location.search).get('cam'));const s=Number(localStorage.getItem('busanCctv'));start=Number.isInteger(q)&&q>=0&&q<CAMS.length&&new URLSearchParams(location.search).has('cam')?q:(Number.isInteger(s)&&s>=0&&s<CAMS.length?s:0)}catch{}
 select(start);
+
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+const ib=document.getElementById('installBox'),it=document.getElementById('installText'),ibtn=document.getElementById('installBtn');let dp=null;
+function dismissed(){try{return sessionStorage.getItem('ci')}catch{return null}}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;if(!standalone&&!dismissed())ib.classList.add('show')});
+ibtn.onclick=async()=>{if(dp){dp.prompt();await dp.userChoice;dp=null;ib.classList.remove('show')}else{it.innerHTML='<b>홈 화면에 추가</b><br>크롬 메뉴(⋮) → “홈 화면에 추가”를 누르세요.'}};
+document.getElementById('installClose').onclick=()=>{ib.classList.remove('show');try{sessionStorage.setItem('ci','1')}catch{}};
+addEventListener('appinstalled',()=>ib.classList.remove('show'));
+setTimeout(()=>{if(!standalone&&!dp&&!dismissed()){it.innerHTML='<b>홈 화면에 추가</b><br>크롬 메뉴(⋮) → “홈 화면에 추가”를 누르세요.';ibtn.style.display='none';ib.classList.add('show')}},2500);
 if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 </script></body></html>

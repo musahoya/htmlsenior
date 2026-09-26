@@ -1,4 +1,4 @@
-const CACHE='busan-cctv-v1';
+const CACHE='busan-cctv-v2';
 const APP_SHELL=['./','./index.html','./manifest.json','./icon.svg','./icon-maskable.svg','./hls.min.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(APP_SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
