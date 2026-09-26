@@ -6,25 +6,126 @@
 <title>부산 교통</title><link rel="manifest" href="./manifest.json"><link rel="icon" href="./icon.svg" type="image/svg+xml">
 <style>
 *{box-sizing:border-box}html{background:#08111f}body{margin:0;background:#08111f;color:#f7f9fc;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;min-height:100vh}.app{max-width:820px;margin:auto;padding:calc(16px + env(safe-area-inset-top)) 14px calc(92px + env(safe-area-inset-bottom))}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.head h1{font-size:23px;margin:0}.sub{color:#9db0c8;font-size:13px;margin-top:5px}.panel{display:none}.panel.active{display:block}.top,.card,.viewer,.install{background:#101a2e;border:1px solid #ffffff12;border-radius:17px}.top{padding:14px;margin-bottom:12px}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.origin{font-weight:850;font-size:16px}.muted{color:#94a6bc;font-size:12px;margin-top:4px}.refresh,.button{border:0;background:#2d7ff9;color:#fff;border-radius:12px;padding:11px 14px;font-weight:850;cursor:pointer;text-decoration:none}.refresh:disabled,.calc:disabled{opacity:.55}.cards{display:grid;gap:10px}.card{padding:15px}.tag{font-size:11px;font-weight:900;color:#9bcaff}.name{font-size:18px;font-weight:900;margin:5px 0 2px}.addr{color:#9fb0c5;font-size:12px}.metrics{display:flex;gap:10px;margin-top:13px}.metric{flex:1;background:#0b1424;border-radius:12px;padding:11px}.big{font-size:23px;font-weight:950}.label{font-size:11px;color:#91a1b7;margin-top:3px}.actions{display:flex;gap:8px;margin-top:12px}.actions button,.actions a{flex:1;text-align:center;text-decoration:none;border:0;border-radius:11px;padding:10px 8px;font-size:13px;font-weight:850}.calc{background:#1c2c49;color:#fff}.map{background:#152033;color:#bcdcff}.status{font-size:12px;margin-top:9px;color:#ffcb72;min-height:18px}.ok{color:#72dfa0}.err{color:#ff8f8f}.viewer{overflow:hidden;background:#000}.ratio{aspect-ratio:16/9;position:relative}.ratio iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.viewerbar{background:#111b2d;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}.camgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.cam{min-height:58px;text-align:left;border:1px solid #ffffff18;border-radius:12px;background:#101a2e;color:white;padding:11px;font-weight:800}.cam.active{outline:2px solid #54a8ff;background:#16345b}.section-title{font-size:14px;color:#9bcaff;margin:18px 2px 9px;font-weight:900}.cctv-list{display:grid;gap:9px}.cctv{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px}.cctv strong{display:block;font-size:15px}.cctv small{display:block;color:#91a1b7;margin-top:4px}.cctv a{white-space:nowrap;background:#214b75;color:#fff;border-radius:10px;padding:9px 11px;text-decoration:none;font-size:12px;font-weight:850}.note{color:#ffcb72!important}.nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(820px,100%);display:grid;grid-template-columns:repeat(3,1fr);padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#0a1323ee;backdrop-filter:blur(14px);border-top:1px solid #ffffff18;z-index:5}.nav button{border:0;background:transparent;color:#8496ad;padding:8px 4px;font-size:11px;font-weight:850}.nav span{display:block;font-size:21px;margin-bottom:2px}.nav button.active{color:#6db2ff}.install{display:none;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;padding:12px}.install.show{display:flex}.install p{margin:0;font-size:12px;line-height:1.4}.install button{border:0;border-radius:10px;padding:9px 11px;background:#2d7ff9;color:#fff;font-weight:850}.foot{color:#7f91a9;font-size:11px;line-height:1.5;margin-top:14px;text-align:center}@media(min-width:700px){.cards{grid-template-columns:repeat(3,1fr)}.metrics{display:block}.metric{margin-top:7px}.camgrid{grid-template-columns:repeat(5,1fr)}.cctv-list{grid-template-columns:1fr 1fr}}@media(display-mode:standalone){.install{display:none!important}}
+
+body{overflow-x:hidden}.viewerbar{flex-wrap:wrap}.viewerbar b{min-width:0;line-height:1.3}.camgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.cam{min-width:0;word-break:keep-all}
+@media(min-width:700px){.camgrid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.cctvgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}@media(min-width:560px){.cctvgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.cctvgrid .cam{text-align:center;padding:13px 8px;font-size:14px;line-height:1.25}
+.vid{position:absolute;inset:0;width:100%;height:100%;background:#000;object-fit:contain}.vmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;color:#c9d4e4;font-size:14px;background:#000a;pointer-events:none}.vmsg[hidden]{display:none}
+.edit{background:#152033;color:#bcdcff}.origin-btn{background:#1c2c49;color:#fff;border:0;border-radius:12px;padding:11px 12px;font-weight:850;font-size:13px}.top .row{flex-wrap:wrap}.addplace{width:100%;margin-top:10px;background:#101a2e;color:#9bcaff;border:1px dashed #ffffff30;border-radius:14px;padding:14px;font-weight:850;font-size:14px}
+.modal{position:fixed;inset:0;background:#000c;display:none;align-items:flex-end;justify-content:center;z-index:20}.modal.show{display:flex}.sheet{width:min(520px,100%);background:#101a2e;border:1px solid #ffffff18;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}.sheet h2{margin:0 0 12px;font-size:17px}.sheet label{display:block;font-size:12px;color:#9db0c8;margin:10px 0 5px}.sheet input{width:100%;background:#0b1424;border:1px solid #ffffff22;border-radius:11px;padding:12px;color:#fff;font-size:16px}.sheet .btns{display:flex;gap:8px;margin-top:16px}.sheet .btns button{flex:1;border:0;border-radius:11px;padding:12px;font-weight:850;font-size:14px;color:#fff;background:#1c2c49}.sheet .btns .primary{background:#2d7ff9}.sheet .btns .danger{background:#5a2330;flex:0 0 auto}.sheet .help{font-size:12px;color:#7f91a9;margin-top:10px;line-height:1.5}
 </style></head>
 <body><main class="app">
 <div id="installBox" class="install"><p><b>홈 화면에 설치</b><br>아이콘 하나로 세 가지 교통 화면을 실행하세요.</p><button id="installBtn">설치</button></div>
 <header class="head"><div><h1 id="pageTitle">🚗 출퇴근 시간</h1><div class="sub" id="pageSub">현재 교통 기준 예상시간과 거리</div></div></header>
-<section class="panel active" id="commutePanel"><section class="top"><div class="row"><div><div class="origin">🏠 오륙도SK뷰아파트</div><div class="muted">출발지 · 부산 남구 오륙도SK뷰아파트</div></div><button class="refresh" id="refresh" type="button">전체 갱신</button></div></section><section class="cards" id="cards"></section><div class="foot">카카오 주소검색·자동차 길찾기 사용 · API 키는 서버에만 보관됩니다.</div></section>
+<section class="panel active" id="commutePanel"><section class="top"><div class="row"><div><div class="origin" id="originName"></div><div class="muted" id="originAddr"></div></div><div style="display:flex;gap:8px"><button class="origin-btn" id="originEdit" type="button">출발지 변경</button><button class="refresh" id="refresh" type="button">전체 갱신</button></div></div></section><section class="cards" id="cards"></section><button class="addplace" id="addPlace" type="button">＋ 장소 추가</button><div class="foot">카카오 주소검색·자동차 길찾기 사용 · 장소는 이 기기에 저장됩니다.</div></section>
 <section class="panel" id="bridgePanel"><section class="viewer"><div class="ratio"><iframe id="player" title="광안대교 CCTV" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div><div class="viewerbar"><b id="camName">하부 롯데아파트</b><div class="actions" style="margin:0"><button class="calc" id="videoReload">새로고침</button><a class="map" id="youtubeLink" target="_blank" rel="noopener">YouTube</a></div></div></section><div class="camgrid" id="camGrid"></div><div class="foot">광안대교 공식 실시간 YouTube 방송 · 영상은 음소거 상태로 시작합니다.</div></section>
-<section class="panel" id="trafficPanel"><div class="muted" style="margin-bottom:12px">UTIC 지도에서 부산 지역으로 이동한 뒤 CCTV 표시를 켜고 원하는 지점을 선택하세요.</div><div class="cctv-list"><article class="card cctv"><div><strong>UTIC 부산 교통지도</strong><small>지도에서 CCTV를 직접 선택</small></div><a href="https://www.utic.go.kr/map/map.do?menu=traffic" target="_blank" rel="noopener">지도 열기</a></article><article class="card cctv"><div><strong>세병교</strong><small>낙동강홍수통제소 CCTV</small></div><a href="https://www.nakdongriver.go.kr/sumun/popup/cctvView.do?Obscd=199056" target="_blank" rel="noopener">영상 열기</a></article></div><div class="foot">UTIC 개별 CCTV 바로가기는 외부 접근이 차단되어 제거했습니다.</div></section>
+<section class="panel" id="trafficPanel"><section class="viewer"><div class="ratio"><video id="cv" class="vid" muted playsinline autoplay controls></video><div id="cmsg" class="vmsg" hidden></div></div><div class="viewerbar"><b id="cname"></b><div class="actions" style="margin:0"><button class="calc" id="creload" type="button">새로고침</button><button class="calc" id="cfull" type="button">전체화면</button></div></div></section><div class="cctvgrid" id="cctvGrid"></div><div class="section-title">기타</div><div class="cctv-list"><article class="card cctv"><div><strong>세병교</strong><small>낙동강홍수통제소 CCTV</small></div><a href="https://www.nakdongriver.go.kr/sumun/popup/cctvView.do?Obscd=199056" target="_blank" rel="noopener">영상 열기</a></article></div><div class="foot">영상은 부산광역시 교통정보서비스센터 실시간 CCTV입니다.</div></section>
 </main>
+<div class="modal" id="modal"><form class="sheet" id="sheet"><h2 id="mTitle"></h2><label for="mName">이름 (화면에 표시)</label><input id="mName" maxlength="30" autocomplete="off"><label for="mAddr">주소 또는 장소명 (카카오 검색용)</label><input id="mAddr" maxlength="80" autocomplete="off" required><div class="help">예: 부산 해운대구 센텀시티역, 부산 수영구 광안해변로 219</div><div class="btns"><button type="button" class="danger" id="mDel">삭제</button><button type="button" id="mCancel">취소</button><button type="submit" class="primary">저장</button></div></form></div>
 <nav class="nav" aria-label="주요 화면"><button class="active" data-tab="commute"><span>🚗</span>출퇴근</button><button data-tab="bridge"><span>🌉</span>광안대교</button><button data-tab="traffic"><span>📹</span>교통 CCTV</button></nav>
-<script src="./config.js"></script><script>
+<script src="./config.js"></script><script src="./hls.min.js"></script><script>
 const apiUrl=(window.COMMUTE_API_URL||'').replace(/\/$/,'');
-const places=[{id:'oncheon',tag:'출근',name:'온천천공원길 38-4',address:'부산 온천천공원길 38-4'},{id:'millak',tag:'자주 가는 곳',name:'민락동 36-3',address:'부산 수영구 민락동 36-3'},{id:'jwadong',tag:'자주 가는 곳',name:'벽산1차 104동',address:'부산 해운대구 좌동 벽산1차아파트 104동'}];
-const cards=document.getElementById('cards'),esc=encodeURIComponent;
-places.forEach((p,i)=>{const e=document.createElement('article');e.className='card';e.innerHTML=`<div class="tag">${p.tag}</div><div class="name">${p.name}</div><div class="addr">${p.address}</div><div class="metrics"><div class="metric"><div class="big" id="time${i}">--분</div><div class="label">현재 예상시간</div></div><div class="metric"><div class="big" id="dist${i}">--km</div><div class="label">예상 거리</div></div></div><div class="status" id="status${i}">갱신 대기</div><div class="actions"><button class="calc" id="calc${i}">다시 계산</button><a class="map" target="_blank" rel="noopener" href="https://map.kakao.com/link/to/${esc(p.name)},${esc(p.address)}">카카오맵</a></div>`;cards.appendChild(e);document.getElementById('calc'+i).onclick=()=>calcOne(i)});
-async function calcOne(i){const st=document.getElementById('status'+i),button=document.getElementById('calc'+i);button.disabled=true;st.textContent='현재 교통정보 계산 중…';try{const r=await fetch(apiUrl+'/route',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({destinationId:places[i].id})});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'서버 요청 실패');document.getElementById('time'+i).textContent=Math.round(d.durationSeconds/60)+'분';document.getElementById('dist'+i).textContent=(d.distanceMeters/1000).toFixed(1)+'km';st.innerHTML='<span class="ok">● '+new Date(d.updatedAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 갱신</span>'}catch(e){st.innerHTML='<span class="err">'+e.message+'</span>'}finally{button.disabled=false}}
-async function calcAll(){const b=document.getElementById('refresh');b.disabled=true;await Promise.all(places.map((_,i)=>calcOne(i)));b.disabled=false}document.getElementById('refresh').onclick=calcAll;
-const cams=[['하부 롯데아파트','FJlxNUM-AXQ'],['하부 용호동','5-BhCOQ4f4s'],['상부 용호동','ufRTT1XhcSs'],['상부 현수중앙','OhXqC3pDBaU'],['상부','FbaiWK-0MsI']];let currentCam=Number(localStorage.getItem('busanCam'))||0;const player=document.getElementById('player'),camName=document.getElementById('camName'),camGrid=document.getElementById('camGrid'),youtubeLink=document.getElementById('youtubeLink');
-function selectCam(i){currentCam=i;camName.textContent=cams[i][0];player.src='https://www.youtube-nocookie.com/embed/'+cams[i][1]+'?autoplay=1&mute=1&playsinline=1&rel=0';youtubeLink.href='https://www.youtube.com/watch?v='+cams[i][1];document.querySelectorAll('.cam').forEach((b,j)=>b.classList.toggle('active',i===j));localStorage.setItem('busanCam',i)}cams.forEach((c,i)=>{const b=document.createElement('button');b.className='cam';b.textContent=c[0];b.onclick=()=>selectCam(i);camGrid.appendChild(b)});document.getElementById('videoReload').onclick=()=>selectCam(currentCam);selectCam(Math.min(currentCam,cams.length-1));
-const tabInfo={commute:['🚗 출퇴근 시간','현재 교통 기준 예상시간과 거리'],bridge:['🌉 광안대교 CCTV','실시간 교통 영상 5개'],traffic:['📹 교통 CCTV','UTIC 교통지도와 세병교']};document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById(b.dataset.tab+'Panel').classList.add('active');document.getElementById('pageTitle').textContent=tabInfo[b.dataset.tab][0];document.getElementById('pageSub').textContent=tabInfo[b.dataset.tab][1];localStorage.setItem('busanTab',b.dataset.tab);scrollTo(0,0)});const savedTab=localStorage.getItem('busanTab');if(savedTab)document.querySelector(`.nav button[data-tab="${savedTab}"]`)?.click();
-let deferredPrompt=null;const installBox=document.getElementById('installBox');window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;installBox.classList.add('show')});document.getElementById('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBox.classList.remove('show')}else alert('브라우저 메뉴에서 “홈 화면에 추가”를 눌러주세요.')};window.addEventListener('appinstalled',()=>installBox.classList.remove('show'));if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));setTimeout(calcAll,300);
-</script></body></html>
-
+const esc=encodeURIComponent;
+const $=id=>document.getElementById(id);
+const html=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* ---------- 출퇴근 ---------- */
+const DEFAULT_CFG={origin:{name:'오륙도SK뷰아파트',address:'부산 남구 오륙도SK뷰아파트'},places:[{id:'oncheon',tag:'출근',name:'온천천공원길 38-4',address:'부산 온천천공원길 38-4'},{id:'millak',tag:'자주 가는 곳',name:'민락동 36-3',address:'부산 수영구 민락동 36-3'},{id:'jwadong',tag:'자주 가는 곳',name:'벽산1차 104동',address:'부산 해운대구 좌동 벽산1차아파트 104동'}]};
+function loadCfg(){try{const c=JSON.parse(localStorage.getItem('commuteCfg')||'null');if(c&&c.origin&&Array.isArray(c.places))return c}catch{}return JSON.parse(JSON.stringify(DEFAULT_CFG))}
+function saveCfg(){try{localStorage.setItem('commuteCfg',JSON.stringify(cfg))}catch{}}
+let cfg=loadCfg();const results={};
+function renderOrigin(){$('originName').textContent='🏠 '+cfg.origin.name;$('originAddr').textContent='출발지 · '+cfg.origin.address}
+function renderCards(){
+  const cards=$('cards');cards.innerHTML='';
+  cfg.places.forEach((p,i)=>{
+    const r=results[p.id]||{};
+    const e=document.createElement('article');e.className='card';
+    e.innerHTML=`<div class="tag">${html(p.tag||(i===0?'출근':'자주 가는 곳'))}</div><div class="name">${html(p.name)}</div><div class="addr">${html(p.address)}</div><div class="metrics"><div class="metric"><div class="big" id="time${i}">${r.time||'--분'}</div><div class="label">현재 예상시간</div></div><div class="metric"><div class="big" id="dist${i}">${r.dist||'--km'}</div><div class="label">예상 거리</div></div></div><div class="status" id="status${i}">${r.status||'갱신 대기'}</div><div class="actions"><button class="calc" id="calc${i}" type="button">다시 계산</button><button class="edit" id="edit${i}" type="button">수정</button><a class="map" target="_blank" rel="noopener" href="https://map.kakao.com/link/to/${esc(p.name)},${esc(p.address)}">카카오맵</a></div>`;
+    cards.appendChild(e);
+    $('calc'+i).onclick=()=>calcOne(i);
+    $('edit'+i).onclick=()=>openModal({title:'장소 수정',name:p.name,addr:p.address,canDelete:true,onSave:(n,a)=>{delete results[p.id];cfg.places[i]={id:'p'+Date.now(),tag:p.tag,name:n,address:a};saveCfg();renderCards();calcOne(i)},onDelete:()=>{cfg.places.splice(i,1);saveCfg();renderCards()}});
+  });
+}
+async function calcOne(i){
+  const p=cfg.places[i];if(!p)return;
+  const st=$('status'+i),button=$('calc'+i);if(!st||!button)return;
+  button.disabled=true;st.textContent='현재 교통정보 계산 중…';
+  try{
+    const body={destination:p.address,origin:cfg.origin.address};
+    if(DEFAULT_CFG.places.some(d=>d.id===p.id))body.destinationId=p.id;
+    const r=await fetch(apiUrl+'/route',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(d.error||'서버 요청 실패');
+    const time=Math.round(d.durationSeconds/60)+'분',dist=(d.distanceMeters/1000).toFixed(1)+'km';
+    const status='<span class="ok">● '+new Date(d.updatedAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 갱신</span>';
+    results[p.id]={time,dist,status};
+    if(cfg.places[i]===p&&$('time'+i)){$('time'+i).textContent=time;$('dist'+i).textContent=dist;st.innerHTML=status}
+  }catch(e){if($('status'+i))$('status'+i).innerHTML='<span class="err">'+html(e.message)+'</span>'}
+  finally{if($('calc'+i))$('calc'+i).disabled=false}
+}
+async function calcAll(){const b=$('refresh');b.disabled=true;await Promise.all(cfg.places.map((_,i)=>calcOne(i)));b.disabled=false}
+$('refresh').onclick=calcAll;
+$('originEdit').onclick=()=>openModal({title:'출발지 변경',name:cfg.origin.name,addr:cfg.origin.address,canDelete:false,onSave:(n,a)=>{cfg.origin={name:n,address:a};for(const k in results)delete results[k];saveCfg();renderOrigin();renderCards();calcAll()}});
+$('addPlace').onclick=()=>openModal({title:'장소 추가',name:'',addr:'',canDelete:false,onSave:(n,a)=>{cfg.places.push({id:'p'+Date.now(),tag:'자주 가는 곳',name:n,address:a});saveCfg();renderCards();calcOne(cfg.places.length-1)}});
+let modalSave=null,modalDel=null;
+function openModal(o){$('mTitle').textContent=o.title;$('mName').value=o.name;$('mAddr').value=o.addr;$('mDel').style.display=o.canDelete?'':'none';modalSave=o.onSave;modalDel=o.onDelete;$('modal').classList.add('show');setTimeout(()=>$('mAddr').focus(),50)}
+function closeModal(){$('modal').classList.remove('show')}
+$('mCancel').onclick=closeModal;
+$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});
+$('mDel').onclick=()=>{if(confirm('이 장소를 삭제할까요?')){closeModal();modalDel&&modalDel()}};
+$('sheet').addEventListener('submit',e=>{e.preventDefault();const a=$('mAddr').value.trim();if(a.length<2)return;const n=$('mName').value.trim()||a;closeModal();modalSave&&modalSave(n,a)});
+renderOrigin();renderCards();
+/* ---------- 광안대교 (YouTube) ---------- */
+const cams=[['하부 롯데아파트','FJlxNUM-AXQ'],['하부 용호동','5-BhCOQ4f4s'],['상부 용호동','ufRTT1XhcSs'],['상부 현수중앙','OhXqC3pDBaU'],['상부','FbaiWK-0MsI']];
+let currentCam=Number(localStorage.getItem('busanCam'))||0;
+const player=$('player'),camName=$('camName'),camGrid=$('camGrid'),youtubeLink=$('youtubeLink');
+function selectCam(i){currentCam=i;camName.textContent=cams[i][0];player.src='https://www.youtube-nocookie.com/embed/'+cams[i][1]+'?autoplay=1&mute=1&playsinline=1&rel=0';youtubeLink.href='https://www.youtube.com/watch?v='+cams[i][1];document.querySelectorAll('#camGrid .cam').forEach((b,j)=>b.classList.toggle('active',i===j));localStorage.setItem('busanCam',i)}
+cams.forEach((c,i)=>{const b=document.createElement('button');b.className='cam';b.textContent=c[0];b.onclick=()=>selectCam(i);camGrid.appendChild(b)});
+$('videoReload').onclick=()=>selectCam(currentCam);
+currentCam=Math.min(currentCam,cams.length-1);
+/* ---------- 교통 CCTV (부산시 HLS) ---------- */
+const CAMS=[["좌수영교", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_125.stream/playlist.m3u8"], ["수영4호교", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_132.stream/playlist.m3u8"], ["센텀입구", "https://its-stream2.busan.go.kr:8443/rtplive/2026-EC-01-041.stream/playlist.m3u8"], ["과정교차로", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_63.stream/playlist.m3u8"], ["토곡사거리", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_62.stream/playlist.m3u8"], ["광안대교 상부 벡스코합류", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_176.stream/playlist.m3u8"], ["광안대교 상부 롯데아파트", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_171.stream/playlist.m3u8"], ["광안대교 하부 광안리합류", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_190.stream/playlist.m3u8"], ["신선대 부산항입구", "https://its-stream5.busan.go.kr:8443/rtplive/cctv_507.stream/playlist.m3u8"], ["동명오거리", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_44.stream/playlist.m3u8"], ["장산터널", "https://its-stream2.busan.go.kr:8443/rtplive/2026-EC-03-010.stream/playlist.m3u8"], ["대천램프", "https://its-stream6.busan.go.kr:8443/rtplive/cctv_2022229.stream/playlist.m3u8"], ["센텀시티역", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_203.stream/playlist.m3u8"], ["벡스코 컨벤션홀1 센텀시티역", "https://its-stream5.busan.go.kr:8443/rtplive/ID-1318_.stream/playlist.m3u8"], ["올림픽교차로", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_88.stream/playlist.m3u8"], ["벡스코 신관2 올림픽교차로", "https://its-stream5.busan.go.kr:8443/rtplive/ID-1319_.stream/playlist.m3u8"]];
+const cv=$('cv'),cmsg=$('cmsg'),cgrid=$('cctvGrid');let curC=Number(localStorage.getItem('busanCctv'))||0,hls=null,retry=0,rt=0;
+if(curC>=CAMS.length)curC=0;
+function csay(t){cmsg.textContent=t||'';cmsg.hidden=!t}
+function cstop(){clearTimeout(rt);if(hls){hls.destroy();hls=null}cv.removeAttribute('src');cv.load()}
+function attach(){
+  hls=new Hls({maxBufferLength:10,liveSyncDurationCount:3});
+  hls.on(Hls.Events.MANIFEST_PARSED,()=>{csay('');cv.play().catch(()=>{})});
+  hls.on(Hls.Events.ERROR,(e,d)=>{if(d.fatal)cfail()});
+  hls.loadSource(CAMS[curC][1]);hls.attachMedia(cv);
+}
+function cplay(){
+  cstop();retry=0;csay('영상을 불러오는 중…');
+  if(window.Hls&&Hls.isSupported())attach();
+  else if(cv.canPlayType('application/vnd.apple.mpegurl')){cv.src=CAMS[curC][1];cv.play().catch(()=>{})}
+  else csay('이 브라우저는 실시간 영상을 재생하지 못합니다.');
+}
+function cfail(){
+  if(retry>=3){csay('영상을 불러오지 못했습니다. 새로고침을 눌러 주세요.');return}
+  retry++;csay('연결이 끊겨 다시 시도하는 중… ('+retry+'/3)');
+  clearTimeout(rt);rt=setTimeout(()=>{if(hls){hls.destroy();hls=null}attach()},2500);
+}
+cv.addEventListener('playing',()=>csay(''));
+function selectC(i){curC=i;$('cname').textContent=CAMS[i][0];document.querySelectorAll('#cctvGrid .cam').forEach((b,j)=>b.classList.toggle('active',i===j));localStorage.setItem('busanCctv',i);cplay()}
+CAMS.forEach((c,i)=>{const b=document.createElement('button');b.className='cam';b.type='button';b.textContent=c[0];b.onclick=()=>selectC(i);cgrid.appendChild(b)});
+$('creload').onclick=cplay;
+$('cfull').onclick=()=>{const f=cv.requestFullscreen||cv.webkitRequestFullscreen||cv.webkitEnterFullscreen;if(f)f.call(cv)};
+/* ---------- 탭 ---------- */
+const tabInfo={commute:['🚗 출퇴근 시간','현재 교통 기준 예상시간과 거리'],bridge:['🌉 광안대교 CCTV','실시간 교통 영상 5개'],traffic:['📹 교통 CCTV','부산 주요 도로 실시간 영상']};
+let activeTab='commute';
+function onTab(t){
+  activeTab=t;
+  // 보이지 않는 탭의 영상은 멈춰서 데이터·배터리를 아낀다.
+  if(t==='bridge')selectCam(currentCam);else player.src='about:blank';
+  if(t==='traffic'){$('cname').textContent=CAMS[curC][0];document.querySelectorAll('#cctvGrid .cam').forEach((b,j)=>b.classList.toggle('active',curC===j));cplay()}else cstop();
+}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));$(b.dataset.tab+'Panel').classList.add('active');$('pageTitle').textContent=tabInfo[b.dataset.tab][0];$('pageSub').textContent=tabInfo[b.dataset.tab][1];localStorage.setItem('busanTab',b.dataset.tab);scrollTo(0,0);onTab(b.dataset.tab)});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&activeTab==='traffic')cplay()});
+const savedTab=localStorage.getItem('busanTab');if(savedTab&&savedTab!=='commute')document.querySelector(`.nav button[data-tab="${savedTab}"]`)?.click();
+/* ---------- 설치 ---------- */
+let deferredPrompt=null;const installBox=$('installBox');window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;installBox.classList.add('show')});$('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBox.classList.remove('show')}else alert('브라우저 메뉴에서 “홈 화면에 추가”를 눌러주세요.')};window.addEventListener('appinstalled',()=>installBox.classList.remove('show'));
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+setTimeout(calcAll,300);
+</script>
+</body></html>
