@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07101d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="부산 CCTV">
+<title>부산 교통 CCTV</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<style>
+*{box-sizing:border-box}html{background:#07101d}
+body{margin:0;background:#07101d;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;min-height:100vh;min-height:100dvh}
+.app{max-width:820px;margin:auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(22px + env(safe-area-inset-bottom))}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+h1{font-size:19px;margin:0}
+.sub{color:#91a0b5;font-size:13px;margin-top:3px}
+.live{color:#ff5468;font-weight:700;font-size:13px;white-space:nowrap}
+.viewer{background:#000;border-radius:14px;overflow:hidden;position:relative}
+.ratio{position:relative;padding-top:56.25%;background:#000}
+video{position:absolute;inset:0;width:100%;height:100%;background:#000;object-fit:contain}
+.msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;color:#c9d4e4;font-size:14px;background:#000a;pointer-events:none}
+.msg[hidden]{display:none}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 2px}
+.bar b{font-size:16px;min-width:0;line-height:1.3;word-break:keep-all}
+.bar div{display:flex;gap:6px;flex-shrink:0}
+button{font:inherit;color:#fff;background:#1a2a44;border:1px solid #2a3f63;border-radius:10px;padding:9px 12px;cursor:pointer}
+button:active{background:#243a5e}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:6px}
+@media(min-width:560px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.cam{padding:14px 10px;font-size:15px;line-height:1.25;text-align:center;word-break:keep-all}
+.cam.active{background:#2563eb;border-color:#5b8def;font-weight:700}
+.hint{color:#7f8fa6;font-size:12px;margin-top:14px;line-height:1.5}
+</style>
+</head>
+<body><main class="app">
+<div class="head"><div><h1>부산 교통 CCTV</h1><div class="sub">지점을 누르면 바로 전환됩니다</div></div><div class="live">● LIVE</div></div>
+<section class="viewer"><div class="ratio"><video id="v" muted playsinline autoplay controls></video><div id="msg" class="msg" hidden></div></div></section>
+<div class="bar"><b id="name"></b><div><button id="reload" type="button">새로고침</button><button id="full" type="button">전체화면</button></div></div>
+<div class="grid" id="grid"></div>
+<div class="hint">영상은 부산광역시 교통정보서비스센터가 제공하는 실시간 CCTV입니다. 재생에는 인터넷 연결이 필요합니다.</div>
+</main>
+<script src="./hls.min.js"></script>
+<script>
+const CAMS=[["좌수영교", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_125.stream/playlist.m3u8"], ["수영4호교", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_132.stream/playlist.m3u8"], ["센텀입구", "https://its-stream2.busan.go.kr:8443/rtplive/2026-EC-01-041.stream/playlist.m3u8"], ["과정교차로", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_63.stream/playlist.m3u8"], ["토곡사거리", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_62.stream/playlist.m3u8"], ["광안대교 상부 벡스코합류", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_176.stream/playlist.m3u8"], ["광안대교 상부 롯데아파트", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_171.stream/playlist.m3u8"], ["광안대교 하부 광안리합류", "https://its-stream4.busan.go.kr:8443/rtplive/cctv_190.stream/playlist.m3u8"], ["신선대 부산항입구", "https://its-stream5.busan.go.kr:8443/rtplive/cctv_507.stream/playlist.m3u8"], ["동명오거리", "https://its-stream3.busan.go.kr:8443/rtplive/cctv_44.stream/playlist.m3u8"], ["장산터널", "https://its-stream2.busan.go.kr:8443/rtplive/2026-EC-03-010.stream/playlist.m3u8"], ["대천램프", "https://its-stream6.busan.go.kr:8443/rtplive/cctv_2022229.stream/playlist.m3u8"]];
+const v=document.getElementById('v'),msg=document.getElementById('msg'),nameEl=document.getElementById('name'),grid=document.getElementById('grid');
+let cur=0,hls=null,retry=0,retryTimer=0;
+function say(text){msg.textContent=text||'';msg.hidden=!text}
+function stop(){clearTimeout(retryTimer);if(hls){hls.destroy();hls=null}v.removeAttribute('src');v.load()}
+function play(){
+  stop();retry=0;say('영상을 불러오는 중…');
+  const url=CAMS[cur][1];
+  if(window.Hls&&Hls.isSupported()){
+    hls=new Hls({maxBufferLength:10,liveSyncDurationCount:3,enableWorker:true});
+    hls.on(Hls.Events.MANIFEST_PARSED,()=>{v.play().catch(()=>{})});
+    hls.on(Hls.Events.ERROR,(e,d)=>{if(!d.fatal)return;fail()});
+    hls.loadSource(url);hls.attachMedia(v);
+  }else if(v.canPlayType('application/vnd.apple.mpegurl')){
+    v.src=url;v.play().catch(()=>{});
+  }else{say('이 브라우저는 실시간 영상을 재생하지 못합니다.')}
+}
+function fail(){
+  if(retry>=3){say('영상을 불러오지 못했습니다. 새로고침을 눌러 주세요.');return}
+  retry++;say('연결이 끊겨 다시 시도하는 중… ('+retry+'/3)');
+  clearTimeout(retryTimer);retryTimer=setTimeout(()=>{
+    if(hls){hls.destroy();hls=null}
+    hls=new Hls({maxBufferLength:10,liveSyncDurationCount:3});
+    hls.on(Hls.Events.MANIFEST_PARSED,()=>{say('');v.play().catch(()=>{})});
+    hls.on(Hls.Events.ERROR,(e,d)=>{if(d.fatal)fail()});
+    hls.loadSource(CAMS[cur][1]);hls.attachMedia(v);
+  },2500);
+}
+v.addEventListener('playing',()=>say(''));
+function select(i){
+  cur=i;nameEl.textContent=CAMS[i][0];
+  document.querySelectorAll('.cam').forEach((b,j)=>b.classList.toggle('active',i===j));
+  try{localStorage.setItem('busanCctv',i)}catch{}
+  play();
+}
+CAMS.forEach((c,i)=>{const b=document.createElement('button');b.className='cam';b.type='button';b.textContent=c[0];b.onclick=()=>select(i);grid.appendChild(b)});
+document.getElementById('reload').onclick=play;
+document.getElementById('full').onclick=()=>{const f=v.requestFullscreen||v.webkitRequestFullscreen||v.webkitEnterFullscreen;if(f)f.call(v)};
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')play()});
+let start=0;try{const q=Number(new URLSearchParams(location.search).get('cam'));const s=Number(localStorage.getItem('busanCctv'));start=Number.isInteger(q)&&q>=0&&q<CAMS.length&&new URLSearchParams(location.search).has('cam')?q:(Number.isInteger(s)&&s>=0&&s<CAMS.length?s:0)}catch{}
+select(start);
+if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+</script></body></html>
