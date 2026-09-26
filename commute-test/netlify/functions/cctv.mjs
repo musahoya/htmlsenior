@@ -26,7 +26,10 @@ export default async (request) => {
     // cctvType 1 = 실시간 스트리밍(HLS), 2 = 동영상 파일. 둘 다 받아 합친다.
     // 도로 종류 ex=고속도로, its=국도·시내도로. 부산 시내 CCTV 는 its 쪽이라 둘 다 조회한다.
     const combos = ['ex', 'its'].flatMap((road) => ['1', '2'].map((cctvType) => [road, cctvType]));
-    const results = await Promise.all(combos.map(([road, cctvType]) => fetchType(key, road, cctvType).catch(() => [])));
+    const diagnostics = [];
+    const results = await Promise.all(combos.map(([road, cctvType]) => fetchType(key, road, cctvType)
+      .then((rows) => { diagnostics.push({ road, cctvType, ok: true, count: rows.length }); return rows; })
+      .catch((error) => { diagnostics.push({ road, cctvType, ok: false, error: String(error.message || error).slice(0, 300) }); return []; })));
     const seen = new Set();
     const items = results.flat().filter((item) => {
       const id = item.name + '|' + item.url;
@@ -35,7 +38,7 @@ export default async (request) => {
       return !q || item.name.includes(q);
     });
     items.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
-    return json({ count: items.length, items, updatedAt: new Date().toISOString() }, 200, { ...cors, 'Cache-Control': 'public, max-age=60' });
+    return json({ count: items.length, items, diagnostics, updatedAt: new Date().toISOString() }, 200, { ...cors, 'Cache-Control': 'public, max-age=600' });
   } catch (error) {
     console.error(error);
     return json({ error: error.message || 'CCTV 목록을 가져오지 못했습니다.' }, 502, cors);
@@ -56,6 +59,7 @@ async function fetchType(key, road, cctvType) {
   let data;
   try { data = JSON.parse(text); } catch { throw new Error('ITS 응답을 읽지 못했습니다: ' + text.slice(0, 120)); }
   const list = data?.response?.data ?? [];
+  if (!list.length) throw new Error('0건: ' + text.slice(0, 200));
   return list.map((row) => ({
     name: String(row.cctvname ?? ''),
     url: String(row.cctvurl ?? ''),
