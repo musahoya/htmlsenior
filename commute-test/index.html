@@ -14,11 +14,14 @@ body{overflow-x:hidden}.viewerbar{flex-wrap:wrap}.viewerbar b{min-width:0;line-h
 .vid{position:absolute;inset:0;width:100%;height:100%;background:#000;object-fit:contain}.vmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;color:#c9d4e4;font-size:14px;background:#000a;pointer-events:none}.vmsg[hidden]{display:none}
 .edit{background:#152033;color:#bcdcff}.origin-btn{background:#1c2c49;color:#fff;border:0;border-radius:12px;padding:11px 12px;font-weight:850;font-size:13px}.top .row{flex-wrap:wrap}.addplace{width:100%;margin-top:10px;background:#101a2e;color:#9bcaff;border:1px dashed #ffffff30;border-radius:14px;padding:14px;font-weight:850;font-size:14px}
 .modal{position:fixed;inset:0;background:#000c;display:none;align-items:flex-end;justify-content:center;z-index:20}.modal.show{display:flex}.sheet{width:min(520px,100%);background:#101a2e;border:1px solid #ffffff18;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}.sheet h2{margin:0 0 12px;font-size:17px}.sheet label{display:block;font-size:12px;color:#9db0c8;margin:10px 0 5px}.sheet input{width:100%;background:#0b1424;border:1px solid #ffffff22;border-radius:11px;padding:12px;color:#fff;font-size:16px}.sheet .btns{display:flex;gap:8px;margin-top:16px}.sheet .btns button{flex:1;border:0;border-radius:11px;padding:12px;font-weight:850;font-size:14px;color:#fff;background:#1c2c49}.sheet .btns .primary{background:#2d7ff9}.sheet .btns .danger{background:#5a2330;flex:0 0 auto}.sheet .help{font-size:12px;color:#7f91a9;margin-top:10px;line-height:1.5}
+.originlist{display:grid;gap:8px}.orow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#0b1424;border-radius:12px;padding:10px 12px}.orow .oname{font-weight:850;font-size:15px}.orow .oaddr{color:#94a6bc;font-size:12px;margin-top:3px;word-break:break-all}.orow .oaddr.empty{color:#ffcb72}.orow button{flex:0 0 auto}
+.metrics.two{gap:8px}.metrics.two .metric{min-width:0;padding:11px 10px}.metrics.two .from{font-size:12px;font-weight:850;color:#9bcaff;margin-bottom:5px}.metrics.two .big{font-size:23px}.metrics.two .dist{font-size:12px;color:#9fb0c5;margin-top:3px}.metrics.two .ms{font-size:11px;margin-top:6px;min-height:14px;color:#ffcb72;word-break:keep-all}
+@media(min-width:700px){.metrics.two{display:flex}}
 </style></head>
 <body><main class="app">
 <div id="installBox" class="install"><p><b>홈 화면에 설치</b><br>아이콘 하나로 세 가지 교통 화면을 실행하세요.</p><button id="installBtn">설치</button></div>
 <header class="head"><div><h1 id="pageTitle">🚗 출퇴근 시간</h1><div class="sub" id="pageSub">현재 교통 기준 예상시간과 거리</div></div></header>
-<section class="panel active" id="commutePanel"><section class="top"><div class="row"><div><div class="origin" id="originName"></div><div class="muted" id="originAddr"></div></div><div style="display:flex;gap:8px"><button class="origin-btn" id="originEdit" type="button">출발지 변경</button><button class="refresh" id="refresh" type="button">전체 갱신</button></div></div></section><section class="cards" id="cards"></section><button class="addplace" id="addPlace" type="button">＋ 장소 추가</button><div class="foot">카카오 주소검색·자동차 길찾기 사용 · 장소는 이 기기에 저장됩니다.</div></section>
+<section class="panel active" id="commutePanel"><section class="top"><div class="row" style="margin-bottom:10px"><div class="origin">출발지</div><button class="refresh" id="refresh" type="button">전체 갱신</button></div><div class="originlist" id="originList"></div></section><section class="cards" id="cards"></section><button class="addplace" id="addPlace" type="button">＋ 장소 추가</button><div class="foot">카카오 주소검색·자동차 길찾기 사용 · 장소는 이 기기에 저장됩니다.</div></section>
 <section class="panel" id="bridgePanel"><section class="viewer"><div class="ratio"><iframe id="player" title="광안대교 CCTV" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div><div class="viewerbar"><b id="camName">하부 롯데아파트</b><div class="actions" style="margin:0"><button class="calc" id="videoReload">새로고침</button><a class="map" id="youtubeLink" target="_blank" rel="noopener">YouTube</a></div></div></section><div class="camgrid" id="camGrid"></div><div class="foot">광안대교 공식 실시간 YouTube 방송 · 영상은 음소거 상태로 시작합니다.</div></section>
 <section class="panel" id="trafficPanel"><section class="viewer"><div class="ratio"><video id="cv" class="vid" muted playsinline autoplay controls></video><div id="cmsg" class="vmsg" hidden></div></div><div class="viewerbar"><b id="cname"></b><div class="actions" style="margin:0"><button class="calc" id="creload" type="button">새로고침</button><button class="calc" id="cfull" type="button">전체화면</button></div></div></section><div class="cctvgrid" id="cctvGrid"></div><div class="section-title">기타</div><div class="cctv-list"><article class="card cctv"><div><strong>세병교</strong><small>낙동강홍수통제소 CCTV</small></div><a href="https://www.nakdongriver.go.kr/sumun/popup/cctvView.do?Obscd=199056" target="_blank" rel="noopener">영상 열기</a></article></div><div class="foot">영상은 부산광역시 교통정보서비스센터 실시간 CCTV입니다.</div></section>
 </main>
@@ -30,42 +33,65 @@ const esc=encodeURIComponent;
 const $=id=>document.getElementById(id);
 const html=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* ---------- 출퇴근 ---------- */
-const DEFAULT_CFG={origin:{name:'오륙도SK뷰아파트',address:'부산 남구 오륙도SK뷰아파트'},places:[{id:'oncheon',tag:'출근',name:'온천천공원길 38-4',address:'부산 온천천공원길 38-4'},{id:'millak',tag:'자주 가는 곳',name:'민락동 36-3',address:'부산 수영구 민락동 36-3'},{id:'jwadong',tag:'자주 가는 곳',name:'벽산1차 104동',address:'부산 해운대구 좌동 벽산1차아파트 104동'}]};
-function loadCfg(){try{const c=JSON.parse(localStorage.getItem('commuteCfg')||'null');if(c&&c.origin&&Array.isArray(c.places))return c}catch{}return JSON.parse(JSON.stringify(DEFAULT_CFG))}
+const OICON=['🏠','🏢'];
+const DEFAULT_CFG={origins:[{name:'집',address:'부산 남구 오륙도SK뷰아파트'},{name:'사무실',address:''}],places:[{id:'oncheon',tag:'출근',name:'온천천공원길 38-4',address:'부산 온천천공원길 38-4'},{id:'millak',tag:'자주 가는 곳',name:'민락동 36-3',address:'부산 수영구 민락동 36-3'},{id:'jwadong',tag:'자주 가는 곳',name:'벽산1차 104동',address:'부산 해운대구 좌동 벽산1차아파트 104동'}]};
+function loadCfg(){
+  try{
+    const c=JSON.parse(localStorage.getItem('commuteCfg')||'null');
+    if(c&&Array.isArray(c.places)){
+      if(Array.isArray(c.origins)&&c.origins.length>=2)return c;
+      if(c.origin)return{origins:[{name:'집',address:c.origin.address},{name:'사무실',address:''}],places:c.places}; // 예전 저장 형식(출발지 1개)
+    }
+  }catch{}
+  return JSON.parse(JSON.stringify(DEFAULT_CFG));
+}
 function saveCfg(){try{localStorage.setItem('commuteCfg',JSON.stringify(cfg))}catch{}}
 let cfg=loadCfg();const results={};
-function renderOrigin(){$('originName').textContent='🏠 '+cfg.origin.name;$('originAddr').textContent='출발지 · '+cfg.origin.address}
+const rkey=(p,o)=>p.id+'#'+o;
+function renderOrigin(){
+  const box=$('originList');box.innerHTML='';
+  cfg.origins.forEach((o,k)=>{
+    const d=document.createElement('div');d.className='orow';
+    d.innerHTML=`<div style="min-width:0"><div class="oname">${OICON[k]} ${html(o.name)}</div><div class="oaddr${o.address?'':' empty'}">${o.address?html(o.address):'주소를 입력하면 시간이 계산됩니다'}</div></div><button class="origin-btn" id="oedit${k}" type="button">${o.address?'변경':'설정'}</button>`;
+    box.appendChild(d);
+    $('oedit'+k).onclick=()=>openModal({title:o.name+' 주소 설정',name:o.name,addr:o.address,canDelete:false,onSave:(n,a)=>{cfg.origins[k]={name:n,address:a};for(const x in results)if(x.endsWith('#'+k))delete results[x];saveCfg();renderOrigin();renderCards();calcAll()}});
+  });
+}
+function metricHtml(p,i,k){
+  const o=cfg.origins[k],r=results[rkey(p,k)]||{};
+  const ms=!o.address?'출발지를 설정하세요':(r.ms||'갱신 대기');
+  return `<div class="metric"><div class="from">${OICON[k]} ${html(o.name)}에서</div><div class="big" id="time${i}_${k}">${r.time||'--분'}</div><div class="dist" id="dist${i}_${k}">${r.dist||'--km'}</div><div class="ms" id="ms${i}_${k}">${ms}</div></div>`;
+}
 function renderCards(){
   const cards=$('cards');cards.innerHTML='';
   cfg.places.forEach((p,i)=>{
-    const r=results[p.id]||{};
     const e=document.createElement('article');e.className='card';
-    e.innerHTML=`<div class="tag">${html(p.tag||(i===0?'출근':'자주 가는 곳'))}</div><div class="name">${html(p.name)}</div><div class="addr">${html(p.address)}</div><div class="metrics"><div class="metric"><div class="big" id="time${i}">${r.time||'--분'}</div><div class="label">현재 예상시간</div></div><div class="metric"><div class="big" id="dist${i}">${r.dist||'--km'}</div><div class="label">예상 거리</div></div></div><div class="status" id="status${i}">${r.status||'갱신 대기'}</div><div class="actions"><button class="calc" id="calc${i}" type="button">다시 계산</button><button class="edit" id="edit${i}" type="button">수정</button><a class="map" target="_blank" rel="noopener" href="https://map.kakao.com/link/to/${esc(p.name)},${esc(p.address)}">카카오맵</a></div>`;
+    e.innerHTML=`<div class="tag">${html(p.tag||(i===0?'출근':'자주 가는 곳'))}</div><div class="name">${html(p.name)}</div><div class="addr">${html(p.address)}</div><div class="metrics two">${metricHtml(p,i,0)}${metricHtml(p,i,1)}</div><div class="actions"><button class="calc" id="calc${i}" type="button">다시 계산</button><button class="edit" id="edit${i}" type="button">수정</button><a class="map" target="_blank" rel="noopener" href="https://map.kakao.com/link/to/${esc(p.name)},${esc(p.address)}">카카오맵</a></div>`;
     cards.appendChild(e);
     $('calc'+i).onclick=()=>calcOne(i);
-    $('edit'+i).onclick=()=>openModal({title:'장소 수정',name:p.name,addr:p.address,canDelete:true,onSave:(n,a)=>{delete results[p.id];cfg.places[i]={id:'p'+Date.now(),tag:p.tag,name:n,address:a};saveCfg();renderCards();calcOne(i)},onDelete:()=>{cfg.places.splice(i,1);saveCfg();renderCards()}});
+    $('edit'+i).onclick=()=>openModal({title:'장소 수정',name:p.name,addr:p.address,canDelete:true,onSave:(n,a)=>{cfg.places[i]={id:'p'+Date.now(),tag:p.tag,name:n,address:a};saveCfg();renderCards();calcOne(i)},onDelete:()=>{cfg.places.splice(i,1);saveCfg();renderCards()}});
   });
 }
-async function calcOne(i){
-  const p=cfg.places[i];if(!p)return;
-  const st=$('status'+i),button=$('calc'+i);if(!st||!button)return;
-  button.disabled=true;st.textContent='현재 교통정보 계산 중…';
+async function calcRoute(i,k){
+  const p=cfg.places[i],o=cfg.origins[k];if(!p)return;
+  const put=(id,v)=>{const el=$(id);if(el)el.textContent=v};
+  if(!o.address)return;
+  put(`ms${i}_${k}`,'계산 중…');
   try{
-    const body={destination:p.address,origin:cfg.origin.address};
+    const body={destination:p.address,origin:o.address};
     if(DEFAULT_CFG.places.some(d=>d.id===p.id))body.destinationId=p.id;
     const r=await fetch(apiUrl+'/route',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const d=await r.json().catch(()=>({}));
     if(!r.ok)throw new Error(d.error||'서버 요청 실패');
     const time=Math.round(d.durationSeconds/60)+'분',dist=(d.distanceMeters/1000).toFixed(1)+'km';
-    const status='<span class="ok">● '+new Date(d.updatedAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 갱신</span>';
-    results[p.id]={time,dist,status};
-    if(cfg.places[i]===p&&$('time'+i)){$('time'+i).textContent=time;$('dist'+i).textContent=dist;st.innerHTML=status}
-  }catch(e){if($('status'+i))$('status'+i).innerHTML='<span class="err">'+html(e.message)+'</span>'}
-  finally{if($('calc'+i))$('calc'+i).disabled=false}
+    const ms='● '+new Date(d.updatedAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 갱신';
+    results[rkey(p,k)]={time,dist,ms};
+    if(cfg.places[i]===p&&cfg.origins[k]===o&&$(`time${i}_${k}`)){put(`time${i}_${k}`,time);put(`dist${i}_${k}`,dist);const m=$(`ms${i}_${k}`);m.textContent=ms;m.style.color='#72dfa0'}
+  }catch(e){const m=$(`ms${i}_${k}`);if(m){m.textContent=e.message;m.style.color='#ff8f8f'}}
 }
+async function calcOne(i){const b=$('calc'+i);if(b)b.disabled=true;await Promise.all([calcRoute(i,0),calcRoute(i,1)]);if($('calc'+i))$('calc'+i).disabled=false}
 async function calcAll(){const b=$('refresh');b.disabled=true;await Promise.all(cfg.places.map((_,i)=>calcOne(i)));b.disabled=false}
 $('refresh').onclick=calcAll;
-$('originEdit').onclick=()=>openModal({title:'출발지 변경',name:cfg.origin.name,addr:cfg.origin.address,canDelete:false,onSave:(n,a)=>{cfg.origin={name:n,address:a};for(const k in results)delete results[k];saveCfg();renderOrigin();renderCards();calcAll()}});
 $('addPlace').onclick=()=>openModal({title:'장소 추가',name:'',addr:'',canDelete:false,onSave:(n,a)=>{cfg.places.push({id:'p'+Date.now(),tag:'자주 가는 곳',name:n,address:a});saveCfg();renderCards();calcOne(cfg.places.length-1)}});
 let modalSave=null,modalDel=null;
 function openModal(o){$('mTitle').textContent=o.title;$('mName').value=o.name;$('mAddr').value=o.addr;$('mDel').style.display=o.canDelete?'':'none';modalSave=o.onSave;modalDel=o.onDelete;$('modal').classList.add('show');setTimeout(()=>$('mAddr').focus(),50)}
